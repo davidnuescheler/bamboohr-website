@@ -598,6 +598,20 @@ function buildArticleHeader(main) {
   return (false);
 }
 
+function buildAuthorContainer(main) {
+  try {
+    if (window.location.pathname.includes('/author/')) {
+      document.body.classList.add('author-page');      
+      const container = buildBlock('author-container', []);
+      main.prepend(container); 
+      return true;
+    }
+  } catch (e) {
+    // something went wrong
+  }
+  return false;
+}
+
 function loadHeader(header) {
   const headerBlock = buildBlock('header', '');
   header.append(headerBlock);
@@ -692,6 +706,27 @@ function buildAutoBlocks(main) {
       buildImagesBlocks(main);
       const related = main.querySelector('.related-posts');
       if (related) related.parentElement.insertBefore(buildBlock('author', [['']]), related);
+    }
+    const isAuthor = buildAuthorContainer(main);
+    if (isAuthor) {
+      const h1 = document.querySelector('h1');
+      const position = h1.nextElementSibling;
+      position.remove();
+      let pic = document.querySelector('picture') 
+        ? document.querySelector('picture').parentElement : null;
+      let bio;
+      if (pic) { 
+        bio = pic.nextElementSibling;
+        pic.remove();
+      }
+      const body = bio ? [[h1], [bio]] : [[h1]];
+      document.querySelector('.author-container').append(
+        buildBlock('author-header', body), 
+        // buildBlock('featured-articles', 'oy'),
+        buildBlock('article-feed', [
+          ['author', h1.textContent]
+        ]),
+      );
     }
   } catch (error) {
     // eslint-disable-next-line no-console
